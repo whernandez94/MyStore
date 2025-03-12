@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Data.SqlClient;
+using System.Linq.Expressions;
 
 namespace MyStore.Pages.Clients
 {
@@ -26,12 +28,40 @@ namespace MyStore.Pages.Clients
                 return;
             }
 
-            //TODO: save the client in database
+            try
+            {
+                String connectionString = "Data Source=WHERNANDEZ\\SQLEXPRESS;Initial Catalog=mystore;Integrated Security=True;Encrypt=False";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    String query = "INSERT INTO clients " +
+                        "(name, email, phone, address) VALUES " +
+                        "(@name, @email, @phone, @address);";
+
+                    using ( SqlCommand command = new SqlCommand(query, connection) )
+                    {
+                        command.Parameters.AddWithValue("@name", clientInfo.name);
+                        command.Parameters.AddWithValue("@email", clientInfo.email);
+                        command.Parameters.AddWithValue("@phone", clientInfo.phone);
+                        command.Parameters.AddWithValue("@address", clientInfo.address);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return;
+            }
+
             clientInfo.name = "";
             clientInfo.email = "";
             clientInfo.phone = "";
             clientInfo.address = "";
             successMessage = "New Client Added Correctly";
+
+            Response.Redirect("/Clients/Index");
         }
     }
 }
