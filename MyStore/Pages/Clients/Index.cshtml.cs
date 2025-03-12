@@ -44,6 +44,11 @@ namespace MyStore.Pages.Clients
                 Console.WriteLine("Exception: " + ex.ToString());
             }
         }
+
+        public void OnPost()
+        {
+
+        }
     }
 
     public class ClientInfo
